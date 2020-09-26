@@ -13,21 +13,24 @@ func main() {
 	for i := 0; i < 3; i++ {
 		id := rnd.Intn(3) + 1
 
-		if b, ok := queryCache(id); ok {
-			fmt.Println("from cache")
-			fmt.Println(b)
-			continue
-		}
+		go func(id int) {
+			if b, ok := queryCache(id); ok {
+				fmt.Println("from cache")
+				fmt.Println(b)
+			}
+		}(id)
 
-		if b, ok := queryDatabase(id); ok {
-			fmt.Println("from database")
-			fmt.Println(b)
-			continue
-		}
+		go func(id int) {
+			if b, ok := queryDatabase(id); ok {
+				fmt.Println("from database")
+				fmt.Println(b)
+			}
+		}(id)
 
-		fmt.Println("Book not found with ID: '%v'", id)
 		time.Sleep(150 * time.Millisecond)
 	}
+
+	time.Sleep(2 * time.Second)
 }
 
 func queryCache(id int) (Book, bool) {
